@@ -25,9 +25,13 @@ libraries = []
 #     extra_compile_args.append('/Z7')
 #     extra_link_args.append('/DEBUG:FULL')
 
-if target == 'linux':
+if target == 'linux' or target == 'darwin':
     extra_compile_args.append('-fpermissive')
     libraries.append('dl')
+
+
+if target == 'darwin':
+    extra_compile_args.append('-std=c++14')
 
 glnext = Extension(
     name='glnext',

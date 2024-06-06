@@ -66,16 +66,26 @@ uint32_t load_instance_extensions(Instance * instance, const char ** array, cons
     PyObject * extensions = get_instance_extensions(instance->vkEnumerateInstanceExtensionProperties);
 
     if (surface) {
-        array[count++] = "VK_KHR_surface";
+        array[count++] = VK_KHR_SURFACE_EXTENSION_NAME;
         array[count++] = surface;
     }
-
-    if (instance->api_version < VK_API_VERSION_1_1 && has_key(extensions, "VK_KHR_get_physical_device_properties2")) {
-        array[count++] = "VK_KHR_get_physical_device_properties2";
+    
+    if (has_key(extensions, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME)) {
+        array[count++] = VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME;
     }
 
-    if (instance->debug) {
-        array[count++] = "VK_EXT_debug_utils";
+    if(has_key(extensions, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)){
+        array[count++] = VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
+    }
+
+    if(has_key(extensions, VK_EXT_SURFACE_MAINTENANCE_1_EXTENSION_NAME)){
+        array[count++] = VK_EXT_SURFACE_MAINTENANCE_1_EXTENSION_NAME;
+    }
+    
+    if (instance->debug) {        
+        if (has_key(extensions, VK_EXT_DEBUG_UTILS_EXTENSION_NAME)) {
+            array[count++] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
+        }
     }
 
     Py_DECREF(extensions);

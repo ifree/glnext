@@ -3,7 +3,7 @@
 #include <Python.h>
 #include <structmember.h>
 
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 
 #ifdef BUILD_WINDOWS
 #include <Windows.h>

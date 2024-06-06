@@ -4,6 +4,7 @@ typedef VkDebugUtilsMessageTypeFlagsEXT LogType;
 typedef VkDebugUtilsMessengerCallbackDataEXT LogData;
 typedef VkDebugUtilsMessageSeverityFlagBitsEXT LogSeverity;
 
+//lldb: b glnext.cpython-310-darwin.so`debug_callback
 VkBool32 debug_callback(LogSeverity severity, LogType types, const LogData * data, void * list) {
     PyObject * message = PyUnicode_FromString(data->pMessage);
     PyList_Append((PyObject *)list, message);

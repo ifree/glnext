@@ -43,10 +43,10 @@ def test_image_write_type_error(instance):
 
 def test_image_mipmaps_invalid_output_mode(instance):
     with pytest.raises(ValueError):
-        instance.image((4, 4), levels=4, mode='output')
+        instance.image((64, 64), levels=4, mode='output')
 
 
 def test_image_mipmaps(instance):
-    data = os.urandom(64)
-    image = instance.image((4, 4), levels=4, mode='texture')
+    data = os.urandom(64 * 64 * 4) # w * h * layers * fmt(4p/rgbau8)
+    image = instance.image((64, 64), levels=4, mode='texture')
     image.write(data)

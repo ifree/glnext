@@ -1,3 +1,7 @@
+#if defined(BUILD_DARWIN)
+#include <dlfcn.h>
+#include <stdlib.h>
+#endif
 #include "glnext.hpp"
 
 PFN_vkGetInstanceProcAddr get_instance_proc_addr(const char * backend) {
@@ -9,8 +13,27 @@ PFN_vkGetInstanceProcAddr get_instance_proc_addr(const char * backend) {
     HMODULE library = LoadLibrary(backend);
     #endif
 
-    #ifdef BUILD_LINUX
+    #if defined(BUILD_LINUX)
     void * library = dlopen(backend, RTLD_LAZY);
+    #elif defined(BUILD_DARWIN)
+    // ref: volk
+    void * library = dlopen("libvulkan.dylib", RTLD_NOW | RTLD_LOCAL);
+    if(!library)
+        library = dlopen("libvulkan.1.dylib", RTLD_NOW | RTLD_LOCAL);
+    if(!library)
+        library = dlopen("libMoltenVK.dylib", RTLD_NOW | RTLD_LOCAL);
+    // Add support for using Vulkan and MoltenVK in a Framework. App store rules for iOS
+    // strictly enforce no .dylib's. If they aren't found it just falls through
+    if (!library)
+        library = dlopen("vulkan.framework/vulkan", RTLD_NOW | RTLD_LOCAL);
+    if (!library)
+        library = dlopen("MoltenVK.framework/MoltenVK", RTLD_NOW | RTLD_LOCAL);
+	// modern versions of macOS don't search /usr/local/lib automatically contrary to what man dlopen says
+	// Vulkan SDK uses this as the system-wide installation location, so we're going to fallback to this if all else fails
+	if (!library && getenv("DYLD_FALLBACK_LIBRARY_PATH") == NULL)
+		library = dlopen("/usr/local/lib/libvulkan.dylib", RTLD_NOW | RTLD_LOCAL);
+	if (!library)
+		return nullptr;
     #endif
 
     if (!library) {
@@ -22,7 +45,7 @@ PFN_vkGetInstanceProcAddr get_instance_proc_addr(const char * backend) {
     return (PFN_vkGetInstanceProcAddr)GetProcAddress(library, "vkGetInstanceProcAddr");
     #endif
 
-    #ifdef BUILD_LINUX
+    #if defined(BUILD_LINUX) || defined(BUILD_DARWIN)
     return (PFN_vkGetInstanceProcAddr)dlsym(library, "vkGetInstanceProcAddr");
     #endif
 }

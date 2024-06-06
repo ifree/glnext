@@ -121,19 +121,19 @@ void default_dealloc(PyObject * self) {
 PyType_Slot Instance_slots[] = {
     {Py_tp_methods, Instance_methods},
     {Py_tp_members, Instance_members},
-    {Py_tp_dealloc, default_dealloc},
+    {Py_tp_dealloc, (void*)default_dealloc},
     {},
 };
 
 PyType_Slot Surface_slots[] = {
     {Py_tp_getset, Surface_getset},
-    {Py_tp_dealloc, default_dealloc},
+    {Py_tp_dealloc, (void*)default_dealloc},
     {},
 };
 
 PyType_Slot Task_slots[] = {
     {Py_tp_methods, Task_methods},
-    {Py_tp_dealloc, default_dealloc},
+    {Py_tp_dealloc, (void*)default_dealloc},
     {},
 };
 
@@ -141,47 +141,47 @@ PyType_Slot Framebuffer_slots[] = {
     {Py_tp_methods, Framebuffer_methods},
     {Py_tp_members, Framebuffer_members},
     {Py_tp_getset, Framebuffer_getset},
-    {Py_tp_dealloc, default_dealloc},
+    {Py_tp_dealloc, (void*)default_dealloc},
     {},
 };
 
 PyType_Slot RenderPipeline_slots[] = {
     {Py_tp_methods, RenderPipeline_methods},
-    {Py_mp_subscript, RenderPipeline_subscript},
-    {Py_tp_dealloc, default_dealloc},
+    {Py_mp_subscript, (void*)RenderPipeline_subscript},
+    {Py_tp_dealloc, (void*)default_dealloc},
     {},
 };
 
 PyType_Slot ComputePipeline_slots[] = {
     {Py_tp_methods, ComputePipeline_methods},
-    {Py_mp_subscript, ComputePipeline_subscript},
-    {Py_tp_dealloc, default_dealloc},
+    {Py_mp_subscript, (void*)ComputePipeline_subscript},
+    {Py_tp_dealloc, (void*)default_dealloc},
     {},
 };
 
 PyType_Slot Memory_slots[] = {
-    {Py_tp_dealloc, default_dealloc},
+    {Py_tp_dealloc, (void*)default_dealloc},
     {},
 };
 
 PyType_Slot Buffer_slots[] = {
     {Py_tp_methods, Buffer_methods},
     {Py_tp_getset, Buffer_getset},
-    {Py_tp_dealloc, default_dealloc},
+    {Py_tp_dealloc, (void*)default_dealloc},
     {},
 };
 
 PyType_Slot Image_slots[] = {
     {Py_tp_methods, Image_methods},
     {Py_tp_getset, Image_getset},
-    {Py_tp_dealloc, default_dealloc},
+    {Py_tp_dealloc, (void*)default_dealloc},
     {},
 };
 
 PyType_Slot Group_slots[] = {
     {Py_tp_methods, Group_methods},
     {Py_tp_members, Group_members},
-    {Py_tp_dealloc, default_dealloc},
+    {Py_tp_dealloc, (void*)default_dealloc},
     {},
 };
 
@@ -236,7 +236,7 @@ int module_exec(PyObject * self) {
 }
 
 PyModuleDef_Slot module_slots[] = {
-    {Py_mod_exec, module_exec},
+    {Py_mod_exec, (void*)module_exec},
     {},
 };
 

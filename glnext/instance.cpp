@@ -133,10 +133,18 @@ Instance * glnext_meth_instance(PyObject * self, PyObject * vargs, PyObject * kw
         res->api_version,
     };
 
+    VkInstanceCreateFlags instance_create_flags = 0;
+    // check if VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME is enabled
+    for(uint32_t i = 0; i < extension_count; i++){
+        if(strcmp(extension_array[i], VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME) == 0){
+            instance_create_flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+            break;
+        }
+    }
     VkInstanceCreateInfo instance_create_info = {
         VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         NULL,
-        0,
+        instance_create_flags,
         &application_info,
         layer_count,
         layer_array,
@@ -144,11 +152,15 @@ Instance * glnext_meth_instance(PyObject * self, PyObject * vargs, PyObject * kw
         extension_array,
     };
 
-    res->vkCreateInstance(&instance_create_info, NULL, &res->instance);
+    VkResult err = res->vkCreateInstance(&instance_create_info, NULL, &res->instance);
+    if(err){
+        PyErr_Format(PyExc_RuntimeError, "cannot create instance %d", err);
+        return nullptr;
+    }
 
-    if (!res->instance) {
+    if (!res->instance) {        
         PyErr_Format(PyExc_RuntimeError, "cannot create instance");
-        return NULL;
+        return nullptr;
     }
 
     load_instance_methods(res);
@@ -231,6 +243,14 @@ Instance * glnext_meth_instance(PyObject * self, PyObject * vargs, PyObject * kw
 
     const char * device_extension_array[64];
     uint32_t device_extension_count = load_device_extensions(res, device_extension_array, surface);
+
+#ifdef VK_KHR_portability_subset
+    for(uint32_t i = 0; i < device_extension_count; i++){
+        if(strcmp(device_extension_array[i], VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME) == 0){
+            device_extension_array[device_extension_count++] = VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME;
+        }
+    }
+#endif
 
     VkPhysicalDeviceMeshShaderFeaturesNV mesh_shader_features = {
         VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV,
