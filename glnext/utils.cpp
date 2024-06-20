@@ -360,6 +360,45 @@ VkPrimitiveTopology get_topology(PyObject * name) {
     return VK_PRIMITIVE_TOPOLOGY_MAX_ENUM;
 }
 
+VkPolygonMode get_polygon_mode(PyObject * name)
+{
+    if(name == Py_None){
+        return VK_POLYGON_MODE_FILL;
+    }
+    if (!PyUnicode_CompareWithASCIIString(name, "fill")) {
+        return VK_POLYGON_MODE_FILL;
+    }
+    if (!PyUnicode_CompareWithASCIIString(name, "line")) {
+        return VK_POLYGON_MODE_LINE;
+    }
+    if (!PyUnicode_CompareWithASCIIString(name, "point")) {
+        return VK_POLYGON_MODE_POINT;
+    }
+    PyErr_Format(PyExc_ValueError, "polygon_mode");
+    return VK_POLYGON_MODE_FILL;
+}
+
+VkCullModeFlagBits get_cull_mode(PyObject * name)
+{
+    if(name == Py_None){
+        return VK_CULL_MODE_BACK_BIT;
+    }
+    if (!PyUnicode_CompareWithASCIIString(name, "none")) {
+        return VK_CULL_MODE_NONE;
+    }
+    if (!PyUnicode_CompareWithASCIIString(name, "front")) {
+        return VK_CULL_MODE_FRONT_BIT;
+    }
+    if (!PyUnicode_CompareWithASCIIString(name, "back")) {
+        return VK_CULL_MODE_BACK_BIT;
+    }
+    if (!PyUnicode_CompareWithASCIIString(name, "front_and_back")) {
+        return VK_CULL_MODE_FRONT_AND_BACK;
+    }
+    PyErr_Format(PyExc_ValueError, "cull_mode");
+    return VK_CULL_MODE_NONE;
+}
+
 ImageMode get_image_mode(PyObject * name) {
     if (!PyUnicode_CompareWithASCIIString(name, "texture")) {
         return IMG_TEXTURE;

@@ -539,5 +539,7 @@ void free_temp_buffer(Instance * instance, HostBuffer * temp);
 void build_mipmaps(BuildMipmapsInfo args);
 
 VkPrimitiveTopology get_topology(PyObject * name);
+VkPolygonMode get_polygon_mode(PyObject * name);
+VkCullModeFlagBits get_cull_mode(PyObject * name);
 ImageMode get_image_mode(PyObject * name);
 Format get_format(PyObject * name);

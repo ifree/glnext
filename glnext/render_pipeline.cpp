@@ -117,6 +117,8 @@ RenderPipeline * Framebuffer_meth_render(Framebuffer * self, PyObject * vargs, P
         "indirect_buffer_offset",
         "count_buffer_offset",
         "topology",
+        "polygon_mode",
+        "cull_mode",
         "restart_index",
         "short_index",
         "depth_test",
@@ -149,6 +151,8 @@ RenderPipeline * Framebuffer_meth_render(Framebuffer * self, PyObject * vargs, P
         VkDeviceSize indirect_buffer_offset = 0;
         VkDeviceSize count_buffer_offset = 0;
         PyObject * topology;
+        PyObject * polygon_mode = Py_None;
+        PyObject * cull_mode = Py_None;
         VkBool32 restart_index = true;
         VkBool32 short_index = false;
         VkBool32 depth_test = true;
@@ -165,7 +169,7 @@ RenderPipeline * Framebuffer_meth_render(Framebuffer * self, PyObject * vargs, P
     int args_ok = PyArg_ParseTupleAndKeywords(
         vargs,
         kwargs,
-        "|$O!O!O!O!OOIIIIIOOOOOKKKKKOppppOO",
+        "|$O!O!O!O!OOIIIIIOOOOOKKKKKOOOppppOO",
         keywords,
         &PyBytes_Type,
         &args.vertex_shader,
@@ -193,6 +197,8 @@ RenderPipeline * Framebuffer_meth_render(Framebuffer * self, PyObject * vargs, P
         &args.indirect_buffer_offset,
         &args.count_buffer_offset,
         &args.topology,
+        &args.polygon_mode,
+        &args.cull_mode,
         &args.restart_index,
         &args.short_index,
         &args.depth_test,
@@ -585,14 +591,16 @@ RenderPipeline * Framebuffer_meth_render(Framebuffer * self, PyObject * vargs, P
         NULL,
     };
 
+    VkPolygonMode polygon_mode = get_polygon_mode(args.polygon_mode);
+    VkCullModeFlags cull_mode = get_cull_mode(args.cull_mode);
     VkPipelineRasterizationStateCreateInfo pipeline_rasterization_state = {
         VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
         NULL,
         0,
         false,
         false,
-        VK_POLYGON_MODE_FILL,
-        VK_CULL_MODE_NONE,
+        polygon_mode,
+        cull_mode,
         VK_FRONT_FACE_COUNTER_CLOCKWISE,
         false,
         0.0f,
