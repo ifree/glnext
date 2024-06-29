@@ -338,7 +338,7 @@ void execute_framebuffer(Framebuffer * self, VkCommandBuffer command_buffer) {
             self->clear_value_array,
         };
 
-        self->instance->vkCmdBeginRenderPass(command_buffer, &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);
+        self->instance->vkCmdBeginRenderPass(command_buffer, &render_pass_begin_info, VK_SUBPASS_CONTENTS_INLINE);                
 
         VkViewport viewport = {0.0f, 0.0f, (float)self->width, (float)self->height, 0.0f, 1.0f};
         self->instance->vkCmdSetViewport(command_buffer, 0, 1, &viewport);
@@ -346,8 +346,32 @@ void execute_framebuffer(Framebuffer * self, VkCommandBuffer command_buffer) {
         VkRect2D scissor = {{0, 0}, {self->width, self->height}};
         self->instance->vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 
+    
         for (uint32_t i = 0; i < PyList_GET_SIZE(self->render_pipeline_list); ++i) {
             RenderPipeline * pipeline = (RenderPipeline *)PyList_GET_ITEM(self->render_pipeline_list, i);
+
+            PyObject* should_clear_color = PyDict_GetItemString(pipeline->members, "should_clear_color");
+            PyObject* should_clear_depth = PyDict_GetItemString(pipeline->members, "should_clear_depth");
+            // clear color, depth
+            VkClearAttachment clear_color_attachment;
+            clear_color_attachment.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            clear_color_attachment.colorAttachment = 0;
+            clear_color_attachment.clearValue = self->clear_value_array[0];
+            
+            VkClearAttachment clear_depth_attachment;
+            clear_depth_attachment.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+            clear_depth_attachment.colorAttachment = 0;
+            clear_depth_attachment.clearValue = self->clear_value_array[self->output_count];
+            
+            VkClearRect clear_rect = {{{0, 0}, {self->width, self->height}}, 0, 1};
+
+            if(should_clear_color == Py_True) {
+                self->instance->vkCmdClearAttachments(command_buffer, 1, &clear_color_attachment, 1, &clear_rect);
+            }
+            if(should_clear_depth == Py_True) {
+                self->instance->vkCmdClearAttachments(command_buffer, 1, &clear_depth_attachment, 1, &clear_rect);
+            }
+            //self->instance->vkCmdClearAttachments(command_buffer, 2, clear_attachments, 1, &clear_rect);
 
             self->instance->vkCmdPushConstants(
                 command_buffer,

@@ -123,6 +123,8 @@ RenderPipeline * Framebuffer_meth_render(Framebuffer * self, PyObject * vargs, P
         "short_index",
         "depth_test",
         "depth_write",
+        "should_clear_color",
+        "should_clear_depth",
         "bindings",
         "memory",
         NULL,
@@ -157,6 +159,8 @@ RenderPipeline * Framebuffer_meth_render(Framebuffer * self, PyObject * vargs, P
         VkBool32 short_index = false;
         VkBool32 depth_test = true;
         VkBool32 depth_write = true;
+        VkBool32 should_clear_color = false;
+        VkBool32 should_clear_depth = false;
         PyObject * bindings;
         PyObject * memory = Py_None;
     } args;
@@ -169,7 +173,7 @@ RenderPipeline * Framebuffer_meth_render(Framebuffer * self, PyObject * vargs, P
     int args_ok = PyArg_ParseTupleAndKeywords(
         vargs,
         kwargs,
-        "|$O!O!O!O!OOIIIIIOOOOOKKKKKOOOppppOO",
+        "|$O!O!O!O!OOIIIIIOOOOOKKKKKOOOppppppOO",
         keywords,
         &PyBytes_Type,
         &args.vertex_shader,
@@ -203,6 +207,8 @@ RenderPipeline * Framebuffer_meth_render(Framebuffer * self, PyObject * vargs, P
         &args.short_index,
         &args.depth_test,
         &args.depth_write,
+        &args.should_clear_color,
+        &args.should_clear_depth,
         &args.bindings,
         &args.memory
     );
@@ -357,6 +363,8 @@ RenderPipeline * Framebuffer_meth_render(Framebuffer * self, PyObject * vargs, P
     if (res->count_buffer) {
         PyDict_SetItemString(res->members, "count_buffer", (PyObject *)res->count_buffer);
     }
+    PyDict_SetItemString(res->members, "should_clear_color", args.should_clear_color ? Py_True : Py_False);
+    PyDict_SetItemString(res->members, "should_clear_depth", args.should_clear_depth ? Py_True : Py_False);
 
     for (uint32_t i = 0; i < res->binding_count; ++i) {
         create_descriptor_binding_objects(self->instance, &res->binding_array[i], memory);

@@ -244,6 +244,7 @@ struct Instance {
     PFN_vkDestroySemaphore vkDestroySemaphore;
     PFN_vkCmdCopyImage vkCmdCopyImage;
     PFN_vkCmdBlitImage vkCmdBlitImage;
+    PFN_vkCmdClearAttachments vkCmdClearAttachments;
 
     PFN_vkCmdDraw vkCmdDraw;
     PFN_vkCmdDrawIndexed vkCmdDrawIndexed;

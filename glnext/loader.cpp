@@ -146,6 +146,7 @@ void load_device_methods(Instance * self) {
     load(vkDestroySemaphore);
     load(vkCmdCopyImage);
     load(vkCmdBlitImage);
+    load(vkCmdClearAttachments);
 
     load(vkCmdDraw);
     load(vkCmdDrawIndexed);
